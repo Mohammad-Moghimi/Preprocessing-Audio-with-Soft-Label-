@@ -24,14 +24,8 @@ from desed_task.utils.schedulers import ExponentialWarmup
 
 def resample_data_generate_durations(config_data, test_only=False, evaluation=False):
     if not test_only:
-        dsets = [
-            "synth_folder",
-            "synth_val_folder",
-            "real_maestro_train_folder",
+        dsets = ["real_maestro_train_folder",
             "real_maestro_val_folder",
-            "strong_folder",
-            "weak_folder",
-            "unlabeled_folder",
             "test_folder",
         ]
     elif evaluation:
@@ -54,14 +48,6 @@ def resample_data_generate_durations(config_data, test_only=False, evaluation=Fa
 
 
 def get_encoder(config):
-    desed_encoder = ManyHotEncoder(
-        list(classes_labels_desed.keys()),
-        audio_len=config["data"]["audio_max_len"],
-        frame_len=config["feats"]["n_filters"],
-        frame_hop=config["feats"]["hop_length"],
-        net_pooling=config["data"]["net_subsample"],
-        fs=config["data"]["fs"],
-    )
     maestro_real_encoder = ManyHotEncoder(
         list(classes_labels_maestro_real.keys()),
         audio_len=config["data"]["audio_max_len"],
@@ -71,7 +57,7 @@ def get_encoder(config):
         fs=config["data"]["fs"],
     )
 
-    encoder = CatManyHotEncoder((desed_encoder, maestro_real_encoder))
+    encoder = maestro_real_encoder
 
     return encoder
 def split_maestro(config, maestro_dev_df):
