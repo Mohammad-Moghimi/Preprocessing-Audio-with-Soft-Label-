@@ -14,9 +14,7 @@ from utils import (calculate_macs, generate_tsv_wav_durations,
                          process_tsvs)
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
-
-from desed_task.dataio import ConcatDatasetBatchSampler
-from ddatasets import (StronglyAnnotatedSet)
+from datasets import (StronglyAnnotatedSet)
 from encoder import CatManyHotEncoder, ManyHotEncoder
 from desed_task.utils.schedulers import ExponentialWarmup
 
