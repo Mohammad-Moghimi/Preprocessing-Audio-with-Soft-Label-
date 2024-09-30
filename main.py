@@ -8,7 +8,7 @@ import pytorch_lightning as pl
 import torch
 import torchaudio
 import yaml
-from local.classes_dict import (classes_labels_maestro_real)
+from classes_dict import (classes_labels_maestro_real)
 from resample_folder import resample_folder
 from utils import (calculate_macs, generate_tsv_wav_durations,
                          process_tsvs)
@@ -16,8 +16,7 @@ from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 
 from desed_task.dataio import ConcatDatasetBatchSampler
-from desed_task.dataio.datasets import (StronglyAnnotatedSet, UnlabeledSet,
-                                        WeakSet)
+from ddatasets import (StronglyAnnotatedSet)
 from encoder import CatManyHotEncoder, ManyHotEncoder
 from desed_task.utils.schedulers import ExponentialWarmup
 
