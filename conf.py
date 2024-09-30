@@ -1,3 +1,31 @@
+training:
+  #batch size: [maestro, synth, strong, weak, unlabel]
+  batch_size: [12, 6, 6, 12, 24]
+  batch_size_val: 24
+  const_max: 2 # max weight used for self supervised loss
+  n_epochs_warmup: 50 # num epochs used for exponential warmup
+  epoch_decay: 100
+  num_workers: 6 # change according to your cpu
+  n_epochs: 300 # max num epochs
+  early_stop_patience: 200 # Same as number of epochs by default, so no early stopping used
+  accumulate_batches: 1
+  gradient_clip: 5.0 # 0 no gradient clipping
+  val_thresholds: [0.5] # thresholds used to compute f1 intersection in validation.
+  n_test_thresholds: 50 # number of thresholds used to compute psds in test
+  ema_factor: 0.999 # ema factor for mean teacher
+  self_sup_loss: mse # bce or mse for self supervised mean teacher loss
+  backend: dp # pytorch lightning backend, ddp, dp or None
+  validation_interval: 10 # perform validation every X epoch, 1 default
+  weak_split: 0.9
+  maestro_split: 0.9
+  seed: 42
+  deterministic: False
+  precision: 32
+  mixup: soft # Soft mixup gives the ratio of the mix to the labels, hard mixup gives a 1 to every label present.
+  mixup_prob: 0.5
+  obj_metric_synth_type: intersection
+  obj_metric_maestro_type: fmo
+  enable_progress_bar: True
 scaler:
   statistic: instance # instance or dataset-wide statistic
   normtype: minmax # minmax or standard or mean normalization
