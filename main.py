@@ -8,11 +8,8 @@ import pytorch_lightning as pl
 import torch
 import torchaudio
 import yaml
-from local.classes_dict import (classes_labels_desed,
-                                classes_labels_maestro_real,
-                                maestro_desed_alias)
+from local.classes_dict import (classes_labels_maestro_real)
 from local.resample_folder import resample_folder
-from local.sed_trainer_pretrained import SEDTask4
 from local.utils import (calculate_macs, generate_tsv_wav_durations,
                          process_tsvs)
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
@@ -21,8 +18,7 @@ from pytorch_lightning.loggers import TensorBoardLogger
 from desed_task.dataio import ConcatDatasetBatchSampler
 from desed_task.dataio.datasets import (StronglyAnnotatedSet, UnlabeledSet,
                                         WeakSet)
-from desed_task.nnet.CRNN import CRNN
-from desed_task.utils.encoder import CatManyHotEncoder, ManyHotEncoder
+from encoder import CatManyHotEncoder, ManyHotEncoder
 from desed_task.utils.schedulers import ExponentialWarmup
 
 
