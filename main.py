@@ -9,8 +9,8 @@ import torch
 import torchaudio
 import yaml
 from local.classes_dict import (classes_labels_maestro_real)
-from local.resample_folder import resample_folder
-from local.utils import (calculate_macs, generate_tsv_wav_durations,
+from resample_folder import resample_folder
+from utils import (calculate_macs, generate_tsv_wav_durations,
                          process_tsvs)
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
