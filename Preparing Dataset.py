@@ -1,6 +1,7 @@
 import glob
 import os.path
 import zipfile
+import shutil  # Import shutil to copy files
 from pathlib import Path
 
 import desed
@@ -227,43 +228,53 @@ def split_maestro_synth(download_folder, out_audio_folder, out_meta_folder):
     )
 
 
-def download_and_prepare_maestro(dcase_dataset_folder):
-    url_synth_audio = "https://zenodo.org/records/5126478/files/audio.zip?download=1"
-    url_synth_meta = "https://zenodo.org/records/5126478/files/meta.zip?download=1"
+def prepare_maestro(dcase_dataset_folder, local_zip_paths):
+    """
+    Prepare the MAESTRO dataset using local ZIP files instead of downloading.
+
+    Parameters:
+    - dcase_dataset_folder: The main folder where the dataset will be organized.
+    - local_zip_paths: A dictionary containing paths to your local ZIP files.
+      Expected keys:
+        - 'synth_audio': Path to 'audio.zip' for the synthetic data.
+        - 'synth_meta': Path to 'meta.zip' for the synthetic metadata.
+        - 'dev_audio': Path to 'development_audio.zip' for the development data.
+        - 'dev_meta': Path to 'development_annotation.zip' for the development annotations.
+        - 'dev_audio_durations': Path to 'development_metadata.csv' file.
+    """
 
     synth_label_metadata_path = os.path.join(dcase_dataset_folder, "maestro_synth")
 
-    def help_extract(main_dir, url_name, name):
+    def help_extract(main_dir, zip_path):
         Path(main_dir).mkdir(parents=True, exist_ok=True)
-        desed.utils.download_file_from_url(url_name, os.path.join(main_dir, name))
-        with zipfile.ZipFile(os.path.join(main_dir, name), "r") as zip_ref:
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(main_dir)
 
-    help_extract(synth_label_metadata_path, url_synth_meta, "meta.zip")
+    # Extract synthetic metadata
+    help_extract(synth_label_metadata_path, local_zip_paths['synth_meta'])
+    # Extract synthetic audio
     synth_audio_path = os.path.join(dcase_dataset_folder, "maestro_synth")
-    help_extract(synth_audio_path, url_synth_audio, "audio.zip")
+    help_extract(synth_audio_path, local_zip_paths['synth_audio'])
 
-    url_dev_audio = (
-        "https://zenodo.org/records/7244360/files/development_audio.zip?download=1"
-    )
+    # Extract development audio
     dev_audio_path = os.path.join(dcase_dataset_folder, "maestro_dev")
-    help_extract(dev_audio_path, url_dev_audio, "development_audio.zip")
-    url_dev_meta = (
-        "https://zenodo.org/records/7244360/files/development_annotation.zip?download=1"
-    )
+    help_extract(dev_audio_path, local_zip_paths['dev_audio'])
+    # Extract development metadata
     dev_meta_path = os.path.join(dcase_dataset_folder, "maestro_dev")
-    help_extract(dev_meta_path, url_dev_meta, "development_audio.zip")
-    url_dev_audio_durations = "https://raw.githubusercontent.com/marmoi/dcase2023_task4b_baseline/main/metadata/development_metadata.csv"
-    desed.utils.download_file_from_url(
-        url_dev_audio_durations, os.path.join(dev_meta_path, "development_metadata.csv")
+    help_extract(dev_meta_path, local_zip_paths['dev_meta'])
+
+    # Copy development metadata CSV
+    shutil.copy(
+        local_zip_paths['dev_audio_durations'],
+        os.path.join(dev_meta_path, "development_metadata.csv")
     )
 
 
-def get_maestro(dcase_dataset_folder):
-    download_and_prepare_maestro(os.path.join(dcase_dataset_folder, "MAESTRO_original"))
+def get_maestro(dcase_dataset_folder, local_zip_paths):
+    prepare_maestro(os.path.join(dcase_dataset_folder, "MAESTRO_original"), local_zip_paths)
     print(
         "Preparing MAESTRO real development and training sets."
-        "Splitting it into 10s chunks."
+        " Splitting it into 10s chunks."
     )
 
     split_maestro_real(
@@ -272,7 +283,7 @@ def get_maestro(dcase_dataset_folder):
         os.path.join(dcase_dataset_folder, "metadata"),
     )
 
-    print("Preparing MAESTRO synth training set." "Splitting it into 10s chunks.")
+    print("Preparing MAESTRO synth training set. Splitting it into 10s chunks.")
 
     split_maestro_synth(
         os.path.join(dcase_dataset_folder, "MAESTRO_original", "maestro_synth"),
@@ -282,8 +293,17 @@ def get_maestro(dcase_dataset_folder):
 
 
 if __name__ == "__main__":
-    split_maestro_real(
-        "/media/samco/Data1/MAESTRO/maestro_dev/",
-        "/media/samco/Data1/MAESTRO_split/audio",
-        "/media/samco/Data1/MAESTRO_split/metadata",
-    )
+    # Define the paths to your local ZIP files
+    local_zip_paths = {
+        'synth_audio': '/path/to/your/local/audio.zip',
+        'synth_meta': '/path/to/your/local/meta.zip',
+        'dev_audio': '/path/to/your/local/development_audio.zip',
+        'dev_meta': '/path/to/your/local/development_annotation.zip',
+        'dev_audio_durations': '/path/to/your/local/development_metadata.csv'
+    }
+
+    # Set the main dataset folder
+    dcase_dataset_folder = '/media/samco/Data1/MAESTRO_split'
+
+    # Call the get_maestro function with the local ZIP paths
+    get_maestro(dcase_dataset_folder, local_zip_paths)
